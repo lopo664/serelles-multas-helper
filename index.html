@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Generador de cadenas para multas del equipo.">
+    <title>Multas del equipo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <main class="app-shell">
+        <nav class="view-nav" aria-label="Vistas del generador">
+            <button id="form-view-button" class="view-button is-active" type="button" aria-controls="form-panel"
+                aria-selected="true">
+                <span>01</span> Nueva multa
+            </button>
+            <button id="result-view-button" class="view-button" type="button" aria-controls="preview-panel"
+                aria-selected="false">
+                <span>02</span> Resultado
+            </button>
+        </nav>
+
+        <section class="workspace" aria-label="Generador de multas">
+            <div id="form-panel" class="form-panel view-panel is-active">
+                <form id="fine-form">
+                    <div class="field-group">
+                        <label class="date-label" for="date">Fecha</label>
+                        <input id="date" name="date" type="date" required aria-label="Seleccionar fecha">
+                    </div>
+
+                    <div class="field-group">
+                        <span class="field-label">Tipo de actividad</span>
+                        <label class="activity-toggle">
+                            <span class="toggle-copy">
+                                <strong id="activity-label">Entreno</strong>
+                            </span>
+                            <input id="is-match" name="is-match" type="checkbox">
+                            <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
+                        </label>
+                    </div>
+
+                    <div class="field-group">
+                        <label id="person-label">Personas</label>
+                        <div id="person-options" class="choice-grid people-grid" role="group"
+                            aria-labelledby="person-label"></div>
+                    </div>
+
+                    <div class="field-group">
+                        <label id="fine-label">Tipos de multa</label>
+                        <div id="fine-options" class="choice-grid fines-grid" role="group" aria-labelledby="fine-label">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="generate-button" type="submit">
+                            <span>Generar cadena</span>
+                            <span class="button-arrow" aria-hidden="true">↗</span>
+                        </button>
+                        <button id="clear-button" class="clear-button" type="button">
+                            <span class="clear-icon" aria-hidden="true">×</span>
+                            <span>Borrar</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="preview-panel" class="preview-panel view-panel">
+                <div class="preview-topline">
+                    <div class="section-heading">
+                        <span class="step-number step-number-light">02</span>
+                        <h2>Cadena generada</h2>
+                    </div>
+                    <span class="status-dot"><span></span> LISTO</span>
+                </div>
+
+                <div class="output-wrap">
+                    <p class="output-label">RESULTADO</p>
+                    <output id="result" class="result" aria-live="polite"></output>
+                </div>
+
+                <button id="copy-button" class="copy-button" type="button" disabled>
+                    <span class="copy-icon" aria-hidden="true">▣</span>
+                    <span id="copy-label">Copiar al portapapeles</span>
+                </button>
+                <p id="copy-feedback" class="copy-feedback" aria-live="polite"></p>
+
+            </div>
+        </section>
+
+        <footer class="footer"><span>CONTROL INTERNO</span><span>·</span><span id="current-year"></span></footer>
+    </main>
+    <script src="app.js"></script>
+</body>
+
+</html>
