@@ -441,6 +441,13 @@ input[type="date"]:focus {
     transform: translateY(-2px);
 }
 
+.generate-button:disabled,
+.generate-button:disabled:hover {
+    cursor: wait;
+    opacity: .65;
+    transform: none;
+}
+
 .button-arrow {
     font-size: 21px;
     font-weight: 400;

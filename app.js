@@ -22,6 +22,7 @@ const copyButton = document.querySelector("#copy-button");
 const copyLabel = document.querySelector("#copy-label");
 const copyFeedback = document.querySelector("#copy-feedback");
 const clearButton = document.querySelector("#clear-button");
+const generateButton = document.querySelector(".generate-button");
 const formPanel = document.querySelector("#form-panel");
 const previewPanel = document.querySelector("#preview-panel");
 const previousFinesPanel = document.querySelector("#previous-fines-panel");
@@ -312,7 +313,16 @@ async function copyResult() {
 addOptions(personOptions, people, (person) => person, (person) => person, "person");
 addOptions(fineOptions, fines, (_, index) => index, (fine) => `${fine.label} · ${fine.amount}€`, "fine");
 dateInput.value = getToday();
-form.addEventListener("submit", (event) => { event.preventDefault(); generateResult(); });
+form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (generateButton.disabled) {
+        return;
+    }
+
+    generateButton.disabled = true;
+    generateResult();
+    setTimeout(() => { generateButton.disabled = false; }, 700);
+});
 form.addEventListener("change", renderPaidLines);
 copyButton.addEventListener("click", copyResult);
 clearButton.addEventListener("click", clearResult);
