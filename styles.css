@@ -185,6 +185,7 @@ h2 {
     border: 1px solid rgba(216, 243, 106, .3);
     border-radius: 50%;
     box-shadow: 0 0 0 25px rgba(216, 243, 106, .04), 0 0 0 50px rgba(216, 243, 106, .03);
+    pointer-events: none;
     content: "";
 }
 
@@ -533,14 +534,28 @@ input[type="date"]:focus {
     color: #f3f7ef;
     border: 1px solid rgba(216, 243, 106, .3);
     background: rgba(255, 255, 255, .03);
-    cursor: pointer;
     font-size: 12px;
     line-height: 1.4;
 }
 
-.paid-line-item input {
-    width: 15px;
-    height: 15px;
+.paid-line-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.paid-option {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.paid-option-right {
+    margin-left: auto;
+}
+
+.paid-option input {
+    width: 22px;
+    height: 22px;
     margin: 0;
     accent-color: var(--lime);
 }
@@ -591,6 +606,8 @@ input[type="date"]:focus {
 }
 
 .copy-button {
+    position: relative;
+    z-index: 1;
     justify-content: center;
     gap: 10px;
     min-height: var(--control-height);

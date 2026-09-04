@@ -39,6 +39,8 @@ const paidToFormButton = document.querySelector("#paid-to-form-button");
 const paidToResultButton = document.querySelector("#paid-to-result-button");
 let generatedLines = [];
 let loadedPreviousLines = [];
+const paidLineBaseValues = new Map();
+const paidLineAmountDoubled = new Map();
 
 function addOptions(container, options, getValue, getLabel, name) {
     options.forEach((option, index) => {
@@ -118,11 +120,20 @@ function getSelectedLines() {
 }
 
 function buildPaidLineId(groupHeader, rawValue, occurrenceIndex) {
-    return `${groupHeader}::${occurrenceIndex}::${rawValue}`;
+    return `${groupHeader}::${occurrenceIndex}`;
+}
+
+function doubleFineAmount(value) {
+    return value.replace(/(\d+(?:[.,]\d+)?)€$/, (_, amount) => {
+        const separator = amount.includes(",") ? "," : ".";
+        const numericAmount = Number(amount.replace(",", "."));
+        const doubledAmount = numericAmount * 2;
+        return `${doubledAmount.toString().replace(".", separator)}€`;
+    });
 }
 
 function getPaidKeys() {
-    return new Set(Array.from(document.querySelectorAll(".paid-line:checked"), (input) => input.dataset.lineValue));
+    return new Set(Array.from(document.querySelectorAll(".paid-status:checked"), (input) => input.dataset.lineValue));
 }
 
 function isDateHeader(line) {
@@ -157,9 +168,13 @@ function parseResultGroups() {
 
         const cleanValue = trimmed.replace(/^~|~$/g, "");
         const occurrenceIndex = currentGroup.lines.length;
+        const lineId = buildPaidLineId(currentGroup.header, cleanValue, occurrenceIndex);
+        if (!paidLineBaseValues.has(lineId)) {
+            paidLineBaseValues.set(lineId, cleanValue);
+        }
         currentGroup.lines.push({
-            id: buildPaidLineId(currentGroup.header, cleanValue, occurrenceIndex),
-            raw: cleanValue,
+            id: lineId,
+            raw: paidLineBaseValues.get(lineId),
             checked: trimmed.startsWith("~") && trimmed.endsWith("~"),
             value: cleanValue
         });
@@ -210,7 +225,8 @@ function updateResultFromPaidSelection() {
     const currentLines = result.textContent ? result.textContent.split(/\n/) : [];
     const groups = parseResultGroups();
     const lineEntries = groups.flatMap((group) => group.lines);
-    const checkedById = new Map(Array.from(document.querySelectorAll(".paid-line"), (input) => [input.dataset.lineId, input.checked]));
+    const paidById = new Map(Array.from(document.querySelectorAll(".paid-status"), (input) => [input.dataset.lineId, input.checked]));
+    const doubledById = new Map(Array.from(document.querySelectorAll(".paid-duplicate"), (input) => [input.dataset.lineId, input.checked]));
     let entryIndex = 0;
 
     const updated = currentLines.map((line) => {
@@ -221,8 +237,13 @@ function updateResultFromPaidSelection() {
 
         const entry = lineEntries[entryIndex++];
         const clean = entry ? entry.raw : trimmed.replace(/^~|~$/g, "");
-        const checked = entry ? (checkedById.get(entry.id) ?? entry.checked) : (trimmed.startsWith("~") && trimmed.endsWith("~"));
-        return checked ? `~${clean}~` : clean;
+        const paid = entry ? (paidById.get(entry.id) ?? entry.checked) : (trimmed.startsWith("~") && trimmed.endsWith("~"));
+        const doubled = entry ? (doubledById.get(entry.id) ?? paidLineAmountDoubled.get(entry.id) ?? false) : false;
+        if (entry) {
+            paidLineAmountDoubled.set(entry.id, doubled);
+        }
+        const displayValue = doubled ? doubleFineAmount(clean) : clean;
+        return paid ? `~${displayValue}~` : displayValue;
     });
 
     result.textContent = updated.join("\n");
@@ -241,10 +262,15 @@ function renderPaidLines() {
         <div class="paid-group">
             <div class="paid-group-header">${group.header}</div>
             ${group.lines.map((line) => `
-                <label class="paid-line-item">
-                    <input class="paid-line" type="checkbox" data-line-id="${line.id}" data-line-key="${line.id}" data-line-value="${line.raw}" ${line.checked ? "checked" : ""}>
-                    <span>${line.checked ? `~${line.raw}~` : line.raw}</span>
-                </label>
+                <div class="paid-line-item">
+                    <label class="paid-option paid-option-left" title="Marcar como pagada">
+                        <input class="paid-status" type="checkbox" aria-label="Marcar como pagada" data-line-id="${line.id}" data-line-value="${line.raw}" ${line.checked ? "checked" : ""}>
+                    </label>
+                    <span class="paid-line-text">${line.checked ? `~${paidLineAmountDoubled.get(line.id) ? doubleFineAmount(line.raw) : line.raw}~` : (paidLineAmountDoubled.get(line.id) ? doubleFineAmount(line.raw) : line.raw)}</span>
+                    <label class="paid-option paid-option-right" title="Duplicar importe">
+                        <input class="paid-duplicate" type="checkbox" aria-label="Duplicar importe" data-line-id="${line.id}" ${paidLineAmountDoubled.get(line.id) ? "checked" : ""}>
+                    </label>
+                </div>
             `).join("")}
         </div>
     `).join("");
@@ -299,6 +325,8 @@ function generateResult() {
 function clearResult() {
     generatedLines = [];
     loadedPreviousLines = [];
+    paidLineBaseValues.clear();
+    paidLineAmountDoubled.clear();
     result.textContent = "";
     copyButton.disabled = true;
     copyLabel.textContent = "Copiar al portapapeles";
@@ -306,13 +334,39 @@ function clearResult() {
 }
 
 async function copyResult() {
+    const text = result.textContent.trim();
+    if (!text) {
+        copyFeedback.textContent = "No hay ninguna cadena para copiar.";
+        return;
+    }
+
     try {
-        await navigator.clipboard.writeText(result.textContent);
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+        } else {
+            copyWithFallback(text);
+        }
         copyLabel.textContent = "Cadena copiada";
         copyFeedback.textContent = "Ya puedes pegarla donde quieras.";
         setTimeout(() => { copyLabel.textContent = "Copiar al portapapeles"; }, 1800);
     } catch {
         copyFeedback.textContent = "No se pudo copiar automáticamente.";
+    }
+}
+
+function copyWithFallback(text) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.append(textarea);
+    textarea.select();
+
+    const copied = document.execCommand("copy");
+    textarea.remove();
+    if (!copied) {
+        throw new Error("Copy command failed");
     }
 }
 
@@ -350,6 +404,8 @@ loadPreviousButton.addEventListener("click", () => {
 
     const [header, ...fineLines] = lines;
     const normalizedHeader = isDateHeader(header) ? normalizeDateHeader(header) : header.trim();
+    paidLineBaseValues.clear();
+    paidLineAmountDoubled.clear();
     loadedPreviousLines = fineLines.map((line) => line.trim());
     result.textContent = [normalizedHeader, ...loadedPreviousLines].filter(Boolean).join("\n");
     generatedLines = [...loadedPreviousLines];
@@ -359,10 +415,18 @@ loadPreviousButton.addEventListener("click", () => {
     showView("paid");
 });
 paidLinesContainer.addEventListener("change", (event) => {
-    if (!event.target.matches(".paid-line")) {
+    if (!event.target.matches(".paid-status, .paid-duplicate")) {
         return;
     }
 
+    const lineId = event.target.dataset.lineId;
+    const isDuplicateControl = event.target.matches(".paid-duplicate");
+    const otherSelector = isDuplicateControl ? ".paid-status" : ".paid-duplicate";
+    const otherControl = paidLinesContainer.querySelector(`${otherSelector}[data-line-id="${CSS.escape(lineId)}"]`);
+    if (event.target.checked && otherControl) {
+        otherControl.checked = false;
+    }
+    paidLineAmountDoubled.set(lineId, isDuplicateControl && event.target.checked);
     updateResultFromPaidSelection();
     renderPaidLines();
 });
