@@ -261,15 +261,25 @@ function generateResult() {
     }));
 
     const currentLines = result.textContent ? result.textContent.split(/\n/).filter((line) => line.trim()) : [];
-    const currentHeader = currentLines.length > 0 ? currentLines[0] : "";
     const nextDateHeader = getDateHeader();
-    const previousLines = currentLines.length > 1 ? currentLines.slice(1).map((line) => line.trim()).filter(Boolean) : [];
 
-    let combinedLines = [];
-    if (currentHeader && currentHeader !== nextDateHeader) {
-        combinedLines = [...currentLines, "", nextDateHeader, ...newLines];
+    const existingHeaderIndex = currentLines.findIndex((line) => line.trim() === nextDateHeader);
+    let combinedLines;
+    if (existingHeaderIndex === -1) {
+        combinedLines = currentLines.length > 0
+            ? [...currentLines, "", nextDateHeader, ...newLines]
+            : [nextDateHeader, ...newLines];
     } else {
-        combinedLines = [currentHeader || nextDateHeader, ...previousLines, ...newLines];
+        let groupEndIndex = existingHeaderIndex + 1;
+        while (groupEndIndex < currentLines.length && !isDateHeader(currentLines[groupEndIndex].trim())) {
+            groupEndIndex += 1;
+        }
+
+        combinedLines = [
+            ...currentLines.slice(0, groupEndIndex),
+            ...newLines,
+            ...currentLines.slice(groupEndIndex)
+        ];
     }
 
     generatedLines = combinedLines.filter((line) => line !== "");
