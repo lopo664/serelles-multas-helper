@@ -70,7 +70,7 @@ function getDateHeader() {
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
 
-    return `${capitalizedWeekday} - ${day}/${month}/${year}`;
+    return `*${capitalizedWeekday} - ${day}/${month}/${year}*`;
 }
 
 function formatFine(fine, person) {
@@ -126,7 +126,11 @@ function getPaidKeys() {
 }
 
 function isDateHeader(line) {
-    return /^.* - \d{2}\/\d{2}\/\d{4}$/.test(line.trim());
+    return /^\*?.+ - \d{2}\/\d{2}\/\d{4}\*?$/.test(line.trim());
+}
+
+function normalizeDateHeader(line) {
+    return `\n*${line.trim().replace(/^\*|\*$/g, "")}*`;
 }
 
 function parseResultGroups() {
@@ -261,7 +265,9 @@ function generateResult() {
         return paidKeys.has(key) ? `~${rawLine}~` : rawLine;
     }));
 
-    const currentLines = result.textContent ? result.textContent.split(/\n/).filter((line) => line.trim()) : [];
+    const currentLines = result.textContent
+        ? result.textContent.split(/\n/).filter((line) => line.trim()).map((line) => isDateHeader(line) ? normalizeDateHeader(line) : line.trim())
+        : [];
     const nextDateHeader = getDateHeader();
 
     const existingHeaderIndex = currentLines.findIndex((line) => line.trim() === nextDateHeader);
@@ -285,7 +291,7 @@ function generateResult() {
 
     generatedLines = combinedLines.filter((line) => line !== "");
     loadedPreviousLines = generatedLines.filter((line) => !line.includes(" - ") || !/^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+ - \d{2}\/\d{2}\/\d{4}$/.test(line));
-    result.textContent = combinedLines.filter((line) => line !== "").join("\n");
+    result.textContent = combinedLines.join("\n");
     copyButton.disabled = false;
     copyFeedback.textContent = "";
 }
@@ -343,8 +349,9 @@ loadPreviousButton.addEventListener("click", () => {
     }
 
     const [header, ...fineLines] = lines;
+    const normalizedHeader = isDateHeader(header) ? normalizeDateHeader(header) : header.trim();
     loadedPreviousLines = fineLines.map((line) => line.trim());
-    result.textContent = [header, ...loadedPreviousLines].filter(Boolean).join("\n");
+    result.textContent = [normalizedHeader, ...loadedPreviousLines].filter(Boolean).join("\n");
     generatedLines = [...loadedPreviousLines];
     copyButton.disabled = false;
     copyFeedback.textContent = "";

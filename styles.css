@@ -587,7 +587,7 @@ input[type="date"]:focus {
     color: var(--lime);
     font: 500 12px/1.5 "DM Sans", sans-serif;
     overflow-wrap: anywhere;
-    white-space: pre-line;
+    white-space: pre-wrap;
 }
 
 .copy-button {
