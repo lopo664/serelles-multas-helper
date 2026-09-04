@@ -160,11 +160,12 @@ h2 {
 .previous-fines-panel,
 .paid-fines-panel {
     padding: var(--panel-padding);
+    color: #f3f7ef;
+    background: var(--navy);
 }
 
 .form-panel {
     flex-direction: column;
-    background: var(--white);
 }
 
 .preview-panel,
@@ -172,8 +173,6 @@ h2 {
 .paid-fines-panel {
     display: flex;
     flex-direction: column;
-    color: #f3f7ef;
-    background: var(--navy);
     position: relative;
 }
 
@@ -417,9 +416,9 @@ input[type="date"]:focus {
     gap: 7px;
     min-height: var(--control-height);
     padding: 0 12px;
-    color: var(--muted);
-    border: 1px solid var(--line);
-    background: var(--white);
+    color: #f3f7ef;
+    border: 1px solid rgba(243, 247, 239, .35);
+    background: transparent;
     cursor: pointer;
     font: 700 12px "DM Sans", sans-serif;
     transition: color .2s, border-color .2s, background .2s;
@@ -428,7 +427,7 @@ input[type="date"]:focus {
 .clear-button:hover {
     color: var(--coral);
     border-color: var(--coral);
-    background: #fff8f5;
+    background: rgba(241, 123, 98, .1);
 }
 
 .clear-icon {
@@ -589,12 +588,12 @@ input[type="date"]:focus {
     gap: 10px;
     min-height: var(--control-height);
     color: var(--navy);
-    background: #f3f7ef;
+    background: var(--lime);
     transition: background .2s;
 }
 
 .copy-button:not(:disabled):hover {
-    background: var(--lime);
+    background: var(--lime-deep);
 }
 
 .copy-button:disabled {
