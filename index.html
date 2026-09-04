@@ -17,33 +17,55 @@
 <body>
     <main class="app-shell">
         <nav class="view-nav" aria-label="Vistas del generador">
-            <button id="form-view-button" class="view-button is-active" type="button" aria-controls="form-panel"
-                aria-selected="true">
-                <span>01</span> Nueva multa
+            <button id="previous-fines-view-button" class="view-button is-active" type="button"
+                aria-controls="previous-fines-panel" aria-selected="true">
+                <span>01</span> Multas anteriores
+            </button>
+            <button id="paid-fines-view-button" class="view-button" type="button" aria-controls="paid-fines-panel"
+                aria-selected="false">
+                <span>02</span> Multas pagadas
+            </button>
+            <button id="form-view-button" class="view-button" type="button" aria-controls="form-panel"
+                aria-selected="false">
+                <span>03</span> Nueva multa
             </button>
             <button id="result-view-button" class="view-button" type="button" aria-controls="preview-panel"
                 aria-selected="false">
-                <span>02</span> Resultado
+                <span>04</span> Resultado
             </button>
         </nav>
 
         <section class="workspace" aria-label="Generador de multas">
-            <div id="form-panel" class="form-panel view-panel is-active">
+            <div id="previous-fines-panel" class="previous-fines-panel view-panel is-active">
+                <div class="section-heading section-heading-compact">
+                    <span class="step-number step-number-light">01</span>
+                    <h2>Multas anteriores</h2>
+                </div>
+                <p class="panel-copy">Pega aquí una cadena previa con el mismo formato del resultado.</p>
+                <textarea id="previous-fines-input" class="paste-area" rows="12"
+                    placeholder="Lunes - 04/09/2026&#10;Pablito - Retraso - 1€&#10;Adri Sanz - Ropa - 1€"></textarea>
+                <button id="load-previous-fines-button" class="secondary-button" type="button">Cargar multas</button>
+            </div>
+
+            <div id="paid-fines-panel" class="paid-fines-panel view-panel">
+                <div class="section-heading section-heading-compact">
+                    <span class="step-number step-number-light">02</span>
+                    <h2>Multas pagadas</h2>
+                </div>
+                <p class="panel-copy">Marca las líneas que ya están pagadas. Se mostrarán con ~ delante y detrás.</p>
+                <div id="paid-date-label" class="paid-date-label"></div>
+                <div id="paid-lines" class="paid-lines"></div>
+                <div class="paid-actions">
+                    <button id="paid-to-form-button" class="secondary-button" type="button">Nueva multa</button>
+                    <button id="paid-to-result-button" class="secondary-button" type="button">Resultado</button>
+                </div>
+            </div>
+
+            <div id="form-panel" class="form-panel view-panel">
                 <form id="fine-form">
                     <div class="field-group">
                         <label class="date-label" for="date">Fecha</label>
                         <input id="date" name="date" type="date" required aria-label="Seleccionar fecha">
-                    </div>
-
-                    <div class="field-group">
-                        <span class="field-label">Tipo de actividad</span>
-                        <label class="activity-toggle">
-                            <span class="toggle-copy">
-                                <strong id="activity-label">Entreno</strong>
-                            </span>
-                            <input id="is-match" name="is-match" type="checkbox">
-                            <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
-                        </label>
                     </div>
 
                     <div class="field-group">
@@ -74,7 +96,7 @@
             <div id="preview-panel" class="preview-panel view-panel">
                 <div class="preview-topline">
                     <div class="section-heading">
-                        <span class="step-number step-number-light">02</span>
+                        <span class="step-number step-number-light">04</span>
                         <h2>Cadena generada</h2>
                     </div>
                     <span class="status-dot"><span></span> LISTO</span>
@@ -90,7 +112,6 @@
                     <span id="copy-label">Copiar al portapapeles</span>
                 </button>
                 <p id="copy-feedback" class="copy-feedback" aria-live="polite"></p>
-
             </div>
         </section>
 
