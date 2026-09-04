@@ -8,6 +8,12 @@
     --lime-deep: #b8d846;
     --coral: #f17b62;
     --navy: #203a43;
+    --space-1: 6px;
+    --space-2: 10px;
+    --space-3: 16px;
+    --space-4: 24px;
+    --panel-padding: clamp(20px, 4vw, 40px);
+    --control-height: 48px;
 }
 
 * {
@@ -36,7 +42,7 @@ body::before {
 .app-shell {
     display: flex;
     flex-direction: column;
-    width: min(1120px, calc(100% - 48px));
+    width: min(1120px, calc(100% - 40px));
     min-height: 100svh;
     margin: 0 auto;
     padding: 30px 0 20px;
@@ -98,7 +104,7 @@ h2 {
 
 .view-nav {
     display: flex;
-    gap: 5px;
+    gap: var(--space-1);
     width: fit-content;
     margin: 0 auto 16px;
     padding: 4px;
@@ -131,6 +137,8 @@ h2 {
 .workspace {
     display: flex;
     flex: none;
+    width: min(100%, 760px);
+    margin: 0 auto;
     box-shadow: 0 20px 60px rgba(32, 58, 67, .1);
 }
 
@@ -148,14 +156,14 @@ h2 {
 }
 
 .form-panel,
-.preview-panel {
-    padding: 10px clamp(28px, 5vw, 64px);
+.preview-panel,
+.previous-fines-panel,
+.paid-fines-panel {
+    padding: var(--panel-padding);
 }
 
 .form-panel {
     flex-direction: column;
-    max-width: 700px;
-    margin: 0 auto;
     background: var(--white);
 }
 
@@ -185,7 +193,7 @@ h2 {
 .preview-topline {
     display: flex;
     align-items: flex-start;
-    gap: 15px;
+    gap: var(--space-2);
 }
 
 .step-number {
@@ -207,17 +215,17 @@ h2 {
 }
 
 form {
-    margin-top: 8px;
+    margin-top: var(--space-3);
 }
 
 .field-group {
-    margin-bottom: 2px;
+    margin-bottom: var(--space-3);
 }
 
 .field-group>label,
 .field-label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: var(--space-1);
     font-size: 12px;
     font-weight: 700;
 }
@@ -225,8 +233,8 @@ form {
 select,
 input[type="date"] {
     width: 100%;
-    min-height: 49px;
-    height: 49px;
+    min-height: var(--control-height);
+    height: var(--control-height);
     display: block;
     padding: 0 14px;
     color: var(--ink);
@@ -251,7 +259,7 @@ input[type="date"] {
 
 .choice-grid {
     display: grid;
-    gap: 6px;
+    gap: var(--space-1);
 }
 
 .people-grid {
@@ -266,8 +274,8 @@ input[type="date"] {
     display: flex;
     align-items: center;
     gap: 8px;
-    min-height: 34px;
-    padding: 6px 8px;
+    min-height: 38px;
+    padding: 8px 10px;
     color: var(--ink);
     border: 1px solid var(--line);
     background: #fbfcfa;
@@ -389,7 +397,7 @@ input[type="date"]:focus {
 }
 
 .generate-button {
-    min-height: 53px;
+    min-height: var(--control-height);
     padding: 0 18px;
     color: var(--ink);
     background: var(--lime);
@@ -407,7 +415,7 @@ input[type="date"]:focus {
     align-items: center;
     justify-content: center;
     gap: 7px;
-    min-height: 53px;
+    min-height: var(--control-height);
     padding: 0 12px;
     color: var(--muted);
     border: 1px solid var(--line);
@@ -444,7 +452,7 @@ input[type="date"]:focus {
 }
 
 .section-heading-compact {
-    margin-bottom: 12px;
+    margin-bottom: var(--space-2);
 }
 
 .panel-copy {
@@ -456,7 +464,7 @@ input[type="date"]:focus {
 
 .paste-area {
     width: 100%;
-    min-height: 230px;
+    min-height: 220px;
     resize: vertical;
     padding: 14px 16px;
     color: var(--ink);
@@ -467,8 +475,8 @@ input[type="date"]:focus {
 
 .secondary-button {
     align-self: flex-start;
-    min-height: 42px;
-    margin-top: 14px;
+    min-height: var(--control-height);
+    margin-top: var(--space-3);
     padding: 0 16px;
     color: var(--ink);
     border: 0;
@@ -489,7 +497,7 @@ input[type="date"]:focus {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
-    margin-top: 16px;
+    margin-top: var(--space-3);
 }
 
 .paid-group {
@@ -560,7 +568,7 @@ input[type="date"]:focus {
     flex: 1;
     flex-direction: column;
     justify-content: center;
-    min-height: 270px;
+    min-height: 250px;
 }
 
 .output-label {
@@ -571,8 +579,7 @@ input[type="date"]:focus {
     display: block;
     max-width: 460px;
     color: var(--lime);
-    font: 600 clamp(23px, 3vw, 35px)/1.17 "Space Grotesk", sans-serif;
-    letter-spacing: -.04em;
+    font: 500 12px/1.5 "DM Sans", sans-serif;
     overflow-wrap: anywhere;
     white-space: pre-line;
 }
@@ -580,7 +587,7 @@ input[type="date"]:focus {
 .copy-button {
     justify-content: center;
     gap: 10px;
-    min-height: 48px;
+    min-height: var(--control-height);
     color: var(--navy);
     background: #f3f7ef;
     transition: background .2s;
